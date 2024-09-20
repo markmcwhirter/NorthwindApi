@@ -3,25 +3,21 @@
 
 public class ProductRepository : Repository<DB.Product>, IProductRepository
 {
-    readonly IDbContextFactory<NorthwindContext> _contextFactory;
+    readonly NorthwindContext _context;
 
-    public ProductRepository(IDbContextFactory<NorthwindContext> contextFactory) : base(contextFactory)
+    public ProductRepository(NorthwindContext context) : base(context)
     {
-        _contextFactory = contextFactory;
+        _context = context;
     }
 
-    public async Task<DB.Product> GetByNameAsync(string name)
-    {
-        using var context = _contextFactory.CreateDbContext();
-        return await context.Products.FirstOrDefaultAsync(p => p.ProductName == name);
-    }
+    public async Task<DB.Product> GetByNameAsync(string name) =>
+        await _context.Products.FirstOrDefaultAsync(p => p.ProductName == name);
+    
 
-    public async Task<IEnumerable<DB.Product>> GetByPriceRangeAsync(decimal minPrice, decimal maxPrice)
-    {
-        using var context = _contextFactory.CreateDbContext();
-        return await context.Products
+    public async Task<IEnumerable<DB.Product>> GetByPriceRangeAsync(decimal minPrice, decimal maxPrice) =>
+        await _context.Products
             .Where(p => p.UnitPrice >= minPrice && p.UnitPrice <= maxPrice)
             .ToListAsync();
-    }
+    
 }
 

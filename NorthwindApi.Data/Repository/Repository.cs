@@ -3,31 +3,21 @@ namespace NorthwindApi.Data;
 
 public class Repository<T> : IRepository<T> where T : class
 {
-    private readonly IDbContextFactory<NorthwindContext> _contextFactory;
+    private readonly NorthwindContext _context;
 
-    public Repository(IDbContextFactory<NorthwindContext> contextFactory)
+    public Repository(NorthwindContext context)
     {
-        _contextFactory = contextFactory;
+        _context = context;
     }
 
-    public async Task<T> GetByIdAsync(int id)
-    {
-        using var context = _contextFactory.CreateDbContext();
-        return await context.Set<T>().FindAsync(id);
-    }
+    public async Task<T> GetByIdAsync(int id) => await _context.Set<T>().FindAsync(id);
 
-    public async Task<IEnumerable<T>> GetAllAsync()
-    {
-        using var context = _contextFactory.CreateDbContext();
-        return await context.Set<T>().ToListAsync();
-    }
+    public async Task<IEnumerable<T>> GetAllAsync() => await _context.Set<T>().ToListAsync();
 
-    public async Task<int> AddAsync(T entity)
+    public async Task<int> AddAsync(T entity) 
     {
-        using var dbContext = await _contextFactory.CreateDbContextAsync();
-
-        var entityEntry = await dbContext.Set<T>().AddAsync(entity);
-        await dbContext.SaveChangesAsync();
+        var entityEntry = await _context.Set<T>().AddAsync(entity);
+        await _context.SaveChangesAsync();
 
         return (int) entityEntry.Property("Id").CurrentValue;
     }
@@ -35,19 +25,17 @@ public class Repository<T> : IRepository<T> where T : class
 
     public async Task UpdateAsync(T entity)
     {
-        using var context = _contextFactory.CreateDbContext();
-        context.Set<T>().Update(entity);
-        await context.SaveChangesAsync();
+        _context.Set<T>().Update(entity);
+        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteAsync(int id)
     {
-        using var context = _contextFactory.CreateDbContext();
-        var entity = await context.Set<T>().FindAsync(id);
+        var entity = await _context.Set<T>().FindAsync(id);
         if (entity != null)
         {
-            context.Set<T>().Remove(entity);
-            await context.SaveChangesAsync();
+            _context.Set<T>().Remove(entity);
+            await _context.SaveChangesAsync();
         }
     }
 }
