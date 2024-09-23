@@ -1,11 +1,11 @@
 ﻿namespace NorthwindApi.Data;
 
 using DB= NorthwindApi.Data.Models;
-public class ProductsService
+public class ProductService : IProductService
 {
     private readonly IProductRepository _productRepository;
 
-    public ProductsService(IProductRepository productRepository) => _productRepository = productRepository;
+    public ProductService(IProductRepository productRepository) => _productRepository = productRepository;
 
     public async Task<IEnumerable<DB.Product>> GetAllProductsAsync() => await _productRepository.GetAllAsync();
 

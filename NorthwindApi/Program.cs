@@ -33,6 +33,7 @@ public class Program
         // Register repositories
         builder.Services.AddTransient(typeof(IRepository<>), typeof(Repository<>));
         builder.Services.AddTransient<IProductRepository, ProductRepository>();
+        builder.Services.AddTransient<IProductService, ProductService>();
 
         var app = builder.Build();
         app.UseFastEndpoints();
